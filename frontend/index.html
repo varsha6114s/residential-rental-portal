@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Residential Apartment Rental Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .status {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .status.success {
+            border-left: 5px solid #10b981;
+        }
+        
+        .status.error {
+            border-left: 5px solid #ef4444;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .card-content {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+        }
+        
+        .btn-secondary {
+            background: #10b981;
+        }
+        
+        .btn-secondary:hover {
+            background: #059669;
+        }
+        
+        .data-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .data-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .item {
+            background: #f9fafb;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .item h4 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .item p {
+            color: #666;
+            margin: 5px 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 5px 5px 5px 0;
+        }
+        
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .login-form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Residential Apartment Rental Portal</h1>
+            <p>Full-Stack Application Demo</p>
+        </div>
+
+        <div id="status" class="status success">
+            <strong>✅ Backend Status:</strong> <span id="backend-status">Checking...</span>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3>📊 API Information</h3>
+                <div class="card-content">
+                    <p><strong>Backend URL:</strong> http://localhost:5000</p>
+                    <p><strong>Total Endpoints:</strong> 29</p>
+                    <p><strong>Database:</strong> SQLite</p>
+                    <p><strong>Authentication:</strong> JWT</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🔑 Test Credentials</h3>
+                <div class="card-content">
+                    <p><strong>Admin:</strong></p>
+                    <p>Email: admin@rental.com</p>
+                    <p>Password: admin123</p>
+                    <br>
+                    <p><strong>User:</strong></p>
+                    <p>Email: john@example.com</p>
+                    <p>Password: password123</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🎯 Quick Actions</h3>
+                <div class="card-content">
+                    <button class="btn" onclick="loadTowers()">View Towers</button>
+                    <button class="btn" onclick="loadUnits()">View Units</button>
+                    <button class="btn" onclick="loadAmenities()">View Amenities</button>
+                    <button class="btn btn-secondary" onclick="showLogin()">Login</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="login-section" style="display: none;">
+            <div class="login-form">
+                <h2 style="color: #667eea; margin-bottom: 20px;">Login</h2>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="login-email" placeholder="admin@rental.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" placeholder="admin123">
+                </div>
+                <button class="btn" onclick="login()" style="width: 100%;">Login</button>
+                <button class="btn" onclick="hideLogin()" style="width: 100%; background: #6b7280; margin-top: 10px;">Cancel</button>
+            </div>
+        </div>
+
+        <div id="data-container"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+        let authToken = localStorage.getItem('authToken');
+
+        // Check backend status
+        async function checkBackend() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                document.getElementById('backend-status').textContent = 'Connected ✓';
+                document.getElementById('status').className = 'status success';
+            } catch (error) {
+                document.getElementById('backend-status').textContent = 'Not Connected ✗';
+                document.getElementById('status').className = 'status error';
+            }
+        }
+
+        // Load towers
+        async function loadTowers() {
+            const container = document.getElementById('data-container');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading towers...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/towers`);
+                const towers = await response.json();
+                
+                let html = '<div class="data-section"><h2>🏢 Available Towers</h2>';
+                
+                if (towers.length === 0) {
+                    html += '<p>No towers available. Please seed the database.</p>';
+                } else {
+                    towers.forEach(tower => {
+                        html += `
+                            <div class="item">
+                                <h4>${tower.name}</h4>
+                                <p>📍 ${tower.address}</p>
+                                <p>🏗️ ${tower.total_floors} floors</p>
+                                <p>${tower.description || 'No description'}</p>
+                                <span class="badge badge-info">${tower.unit_count} units</span>
+                            </div>
+                        `;
+                    });
+                }
+                
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = '<div class="status error">Error loading towers. Make sure backend is running.</div>';
+            }
+        }
+
+        // Load units
+        async function loadUnits() {
+            const container = document.getElementById('data-container');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading units...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/units?status=available`);
+                const units = await response.json();
+                
+                let html = '<div class="data-section"><h2>🏠 Available Units</h2>';
+                
+                if (units.length === 0) {
+                    html += '<p>No units available. Please seed the database.</p>';
+                } else {
+                    units.forEach(unit => {
+                        html += `
+                            <div class="item">
+                                <h4>Unit ${unit.unit_number} - ${unit.tower_name}</h4>
+                                <p>🛏️ ${unit.bedrooms} Bedrooms | 🚿 ${unit.bathrooms} Bathrooms</p>
+                                <p>📐 ${unit.size_sqft} sq ft | 🏢 Floor ${unit.floor}</p>
+                                <p>💰 $${unit.rent_amount}/month</p>
+                                <span class="badge badge-success">${unit.status}</span>
+                            </div>
+                        `;
+                    });
+                }
+                
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = '<div class="status error">Error loading units. Make sure backend is running.</div>';
+            }
+        }
+
+        // Load amenities
+        async function loadAmenities() {
+            const container = document.getElementById('data-container');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading amenities...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/amenities`);
+                const amenities = await response.json();
+                
+                let html = '<div class="data-section"><h2>🎯 Available Amenities</h2>';
+                
+                if (amenities.length === 0) {
+                    html += '<p>No amenities available. Please seed the database.</p>';
+                } else {
+                    amenities.forEach(amenity => {
+                        html += `
+                            <div class="item">
+                                <h4>${amenity.name}</h4>
+                                <p>${amenity.description || 'No description'}</p>
+                                <p>🕐 ${amenity.availability_hours || 'Hours not specified'}</p>
+                                <span class="badge badge-success">Active</span>
+                            </div>
+                        `;
+                    });
+                }
+                
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = '<div class="status error">Error loading amenities. Make sure backend is running.</div>';
+            }
+        }
+
+        // Show login form
+        function showLogin() {
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('data-container').innerHTML = '';
+        }
+
+        // Hide login form
+        function hideLogin() {
+            document.getElementById('login-section').style.display = 'none';
+        }
+
+        // Login
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    alert(`✅ Login successful! Welcome ${data.user.name}`);
+                    hideLogin();
+                    
+                    document.getElementById('data-container').innerHTML = `
+                        <div class="status success">
+                            <strong>Logged in as:</strong> ${data.user.name} (${data.user.role})
+                        </div>
+                    `;
+                } else {
+                    alert('❌ Login failed: ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        // Check backend on load
+        checkBackend();
+        
+        // Auto-refresh backend status every 5 seconds
+        setInterval(checkBackend, 5000);
+    </script>
+</body>
+</html>

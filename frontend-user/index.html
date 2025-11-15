@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Portal - User</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-indigo-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">🏢</span>
+                    <h1 class="text-xl font-bold">Rental Portal</h1>
+                </div>
+                <div id="nav-menu" class="flex items-center space-x-4">
+                    <span id="user-name" class="hidden"></span>
+                    <button onclick="logout()" id="logout-btn" class="hidden bg-red-500 px-4 py-2 rounded hover:bg-red-600">Logout</button>
+                    <button onclick="showLogin()" id="login-btn" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-100">Login</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Login Page -->
+        <div id="login-page" class="max-w-md mx-auto">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">User Login</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2">Email</label>
+                        <input type="email" id="login-email" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="john@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Password</label>
+                        <input type="password" id="login-password" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="password123">
+                    </div>
+                    <button onclick="login()" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700">Login</button>
+                    <button onclick="showRegister()" class="w-full bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300">Register New Account</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Page -->
+        <div id="register-page" class="max-w-md mx-auto hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Register</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2">Full Name</label>
+                        <input type="text" id="reg-name" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Email</label>
+                        <input type="email" id="reg-email" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Phone</label>
+                        <input type="tel" id="reg-phone" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Password</label>
+                        <input type="password" id="reg-password" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <button onclick="register()" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700">Register</button>
+                    <button onclick="showLogin()" class="w-full bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300">Back to Login</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Welcome to Your Dashboard</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <button onclick="showTowers()" class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+                        <div class="text-4xl mb-2">🏢</div>
+                        <div class="font-semibold">Browse Towers</div>
+                    </button>
+                    <button onclick="showUnits()" class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+                        <div class="text-4xl mb-2">🏠</div>
+                        <div class="font-semibold">View Units</div>
+                    </button>
+                    <button onclick="showAmenities()" class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+                        <div class="text-4xl mb-2">🎯</div>
+                        <div class="font-semibold">Amenities</div>
+                    </button>
+                    <button onclick="showMyBookings()" class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+                        <div class="text-4xl mb-2">📋</div>
+                        <div class="font-semibold">My Bookings</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div id="content-area"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+        let token = localStorage.getItem('token');
+        let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+        // Initialize
+        if (token && currentUser) {
+            showDashboard();
+        }
+
+        function showLogin() {
+            document.getElementById('login-page').classList.remove('hidden');
+            document.getElementById('register-page').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+        }
+
+        function showRegister() {
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('register-page').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('register-page').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('login-btn').classList.add('hidden');
+            document.getElementById('logout-btn').classList.remove('hidden');
+            document.getElementById('user-name').classList.remove('hidden');
+            document.getElementById('user-name').textContent = `Hello, ${currentUser.name}`;
+        }
+
+        async function register() {
+            const data = {
+                name: document.getElementById('reg-name').value,
+                email: document.getElementById('reg-email').value,
+                phone: document.getElementById('reg-phone').value,
+                password: document.getElementById('reg-password').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert('✅ Registration successful! Please login.');
+                    showLogin();
+                } else {
+                    alert('❌ ' + result.error);
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    token = result.token;
+                    currentUser = result.user;
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                    showDashboard();
+                } else {
+                    alert('❌ ' + result.error);
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        function logout() {
+            token = null;
+            currentUser = null;
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            showLogin();
+        }
+
+        async function showTowers() {
+            const content = document.getElementById('content-area');
+            content.innerHTML = '<div class="text-center py-8"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div></div>';
+
+            try {
+                const response = await fetch(`${API_URL}/api/towers`);
+                const towers = await response.json();
+                
+                let html = '<div class="bg-white rounded-lg shadow-lg p-6"><h3 class="text-2xl font-bold mb-4">Available Towers</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">';
+                
+                towers.forEach(tower => {
+                    html += `
+                        <div class="border rounded-lg p-4 hover:shadow-lg transition cursor-pointer" onclick="showUnitsForTower(${tower.id})">
+                            <h4 class="font-bold text-lg mb-2">${tower.name}</h4>
+                            <p class="text-gray-600 text-sm mb-2">📍 ${tower.address}</p>
+                            <p class="text-gray-600 text-sm">🏗️ ${tower.total_floors} floors</p>
+                            <p class="text-gray-600 text-sm">${tower.description || ''}</p>
+                            <div class="mt-2"><span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs">${tower.unit_count} units</span></div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div></div>';
+                content.innerHTML = html;
+            } catch (error) {
+                content.innerHTML = '<div class="bg-red-100 text-red-700 p-4 rounded">Error loading towers</div>';
+            }
+        }
+
+        async function showUnits() {
+            const content = document.getElementById('content-area');
+            content.innerHTML = '<div class="text-center py-8"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div></div>';
+
+            try {
+                const response = await fetch(`${API_URL}/api/units?status=available`);
+                const units = await response.json();
+                
+                let html = '<div class="bg-white rounded-lg shadow-lg p-6"><h3 class="text-2xl font-bold mb-4">Available Units</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+                
+                units.forEach(unit => {
+                    html += `
+                        <div class="border rounded-lg p-4 hover:shadow-lg transition">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-lg">Unit ${unit.unit_number}</h4>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">${unit.status}</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2">🏢 ${unit.tower_name}</p>
+                            <p class="text-gray-600 text-sm">🛏️ ${unit.bedrooms} BR | 🚿 ${unit.bathrooms} BA</p>
+                            <p class="text-gray-600 text-sm">📐 ${unit.size_sqft} sq ft | Floor ${unit.floor}</p>
+                            <p class="text-2xl font-bold text-indigo-600 mt-2">$${unit.rent_amount}/mo</p>
+                            <button onclick="bookUnit(${unit.id}, '${unit.unit_number}')" class="mt-4 w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">Book Now</button>
+                        </div>
+                    `;
+                });
+                
+                html += '</div></div>';
+                content.innerHTML = html;
+            } catch (error) {
+                content.innerHTML = '<div class="bg-red-100 text-red-700 p-4 rounded">Error loading units</div>';
+            }
+        }
+
+        async function showAmenities() {
+            const content = document.getElementById('content-area');
+            content.innerHTML = '<div class="text-center py-8"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div></div>';
+
+            try {
+                const response = await fetch(`${API_URL}/api/amenities`);
+                const amenities = await response.json();
+                
+                let html = '<div class="bg-white rounded-lg shadow-lg p-6"><h3 class="text-2xl font-bold mb-4">Available Amenities</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">';
+                
+                amenities.forEach(amenity => {
+                    html += `
+                        <div class="border rounded-lg p-4">
+                            <h4 class="font-bold text-lg mb-2">🎯 ${amenity.name}</h4>
+                            <p class="text-gray-600 text-sm mb-2">${amenity.description || ''}</p>
+                            <p class="text-gray-600 text-sm">🕐 ${amenity.availability_hours || 'N/A'}</p>
+                            <span class="inline-block mt-2 bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Active</span>
+                        </div>
+                    `;
+                });
+                
+                html += '</div></div>';
+                content.innerHTML = html;
+            } catch (error) {
+                content.innerHTML = '<div class="bg-red-100 text-red-700 p-4 rounded">Error loading amenities</div>';
+            }
+        }
+
+        async function bookUnit(unitId, unitNumber) {
+            const moveInDate = prompt(`Enter move-in date for Unit ${unitNumber} (YYYY-MM-DD):`, '2025-12-01');
+            if (!moveInDate) return;
+
+            try {
+                const response = await fetch(`${API_URL}/api/bookings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        unit_id: unitId,
+                        requested_move_in_date: moveInDate
+                    })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert('✅ Booking request submitted successfully!');
+                    showMyBookings();
+                } else {
+                    alert('❌ ' + result.error);
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        async function showMyBookings() {
+            const content = document.getElementById('content-area');
+            content.innerHTML = '<div class="text-center py-8"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div></div>';
+
+            try {
+                const response = await fetch(`${API_URL}/api/bookings`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const bookings = await response.json();
+                
+                let html = '<div class="bg-white rounded-lg shadow-lg p-6"><h3 class="text-2xl font-bold mb-4">My Bookings</h3>';
+                
+                if (bookings.length === 0) {
+                    html += '<p class="text-gray-600">No bookings yet. Browse units to make a booking!</p>';
+                } else {
+                    html += '<div class="space-y-4">';
+                    bookings.forEach(booking => {
+                        const statusColor = booking.status === 'approved' ? 'green' : booking.status === 'rejected' ? 'red' : 'yellow';
+                        html += `
+                            <div class="border rounded-lg p-4">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-bold text-lg">Unit ${booking.unit_number}</h4>
+                                        <p class="text-gray-600 text-sm">${booking.tower_name}</p>
+                                        <p class="text-gray-600 text-sm">Move-in: ${booking.requested_move_in_date}</p>
+                                        <p class="text-gray-600 text-sm">Requested: ${new Date(booking.created_at).toLocaleDateString()}</p>
+                                        ${booking.admin_comments ? `<p class="text-gray-600 text-sm mt-2">Note: ${booking.admin_comments}</p>` : ''}
+                                    </div>
+                                    <span class="bg-${statusColor}-100 text-${statusColor}-800 px-3 py-1 rounded">${booking.status}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                }
+                
+                html += '</div>';
+                content.innerHTML = html;
+            } catch (error) {
+                content.innerHTML = '<div class="bg-red-100 text-red-700 p-4 rounded">Error loading bookings</div>';
+            }
+        }
+
+        async function showUnitsForTower(towerId) {
+            const content = document.getElementById('content-area');
+            content.innerHTML = '<div class="text-center py-8"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div></div>';
+
+            try {
+                const response = await fetch(`${API_URL}/api/units?tower_id=${towerId}&status=available`);
+                const units = await response.json();
+                
+                let html = '<div class="bg-white rounded-lg shadow-lg p-6">';
+                html += '<button onclick="showTowers()" class="mb-4 text-indigo-600 hover:text-indigo-800">← Back to Towers</button>';
+                html += '<h3 class="text-2xl font-bold mb-4">Units in This Tower</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+                
+                units.forEach(unit => {
+                    html += `
+                        <div class="border rounded-lg p-4 hover:shadow-lg transition">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-lg">Unit ${unit.unit_number}</h4>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">${unit.status}</span>
+                            </div>
+                            <p class="text-gray-600 text-sm">🛏️ ${unit.bedrooms} BR | 🚿 ${unit.bathrooms} BA</p>
+                            <p class="text-gray-600 text-sm">📐 ${unit.size_sqft} sq ft | Floor ${unit.floor}</p>
+                            <p class="text-2xl font-bold text-indigo-600 mt-2">$${unit.rent_amount}/mo</p>
+                            <button onclick="bookUnit(${unit.id}, '${unit.unit_number}')" class="mt-4 w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">Book Now</button>
+                        </div>
+                    `;
+                });
+                
+                html += '</div></div>';
+                content.innerHTML = html;
+            } catch (error) {
+                content.innerHTML = '<div class="bg-red-100 text-red-700 p-4 rounded">Error loading units</div>';
+            }
+        }
+    </script>
+</body>
+</html>

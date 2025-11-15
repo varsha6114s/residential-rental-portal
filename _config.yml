@@ -1,0 +1,23 @@
+title: Residential Apartment Rental Portal
+description: A complete full-stack web application for managing apartment rentals
+theme: jekyll-theme-cayman
+markdown: kramdown
+highlighter: rouge
+
+# GitHub Pages settings
+baseurl: "/residential-rental-portal"
+url: "https://varsha6114s.github.io"
+
+# Exclude from processing
+exclude:
+  - backend/
+  - venv/
+  - node_modules/
+  - "*.py"
+  - "*.pyc"
+  - __pycache__/
+  - .env
+  - docker-compose.yml
+  - Dockerfile
+  - instance/
+  - .vscode/

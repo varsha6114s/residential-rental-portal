@@ -56,3 +56,16 @@ npm-debug.log*
 # Temporary files
 *.tmp
 *.temp
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Database
+*.db
+instance/
+
+# Virtual environment
+venv/
+backend/venv/

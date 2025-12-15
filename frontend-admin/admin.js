@@ -42,10 +42,10 @@ async function login() {
 }
 
 function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('admin');
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
     token = null;
-    currentAdmin = null;
+    currentUser = null;
     window.location.href = '../index.html';
 }
 
@@ -212,23 +212,94 @@ async function addTower() {
 }
 
 async function deleteTower(id) {
-    if (!confirm('Are you sure you want to delete this tower?')) return;
+    showConfirmModal('Are you sure you want to delete this tower?', async (confirmed) => {
+        if (!confirmed) return;
+
+        try {
+            const response = await fetch(`${API_URL}/api/towers/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                alert('Tower deleted successfully!');
+                showTowers();
+            } else {
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                alert(`Error deleting tower (${response.status}): ${errorData.error || response.statusText}`);
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    });
+}
+
+async function editTower(id) {
+    try {
+        // Fetch tower data
+        const response = await fetch(`${API_URL}/api/towers/${id}`);
+        const tower = await response.json();
+
+        const content = document.getElementById('content-area');
+        content.innerHTML = `
+            <div class="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
+                <h3 class="text-2xl font-bold mb-6">Edit Tower</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2">Tower Name</label>
+                        <input type="text" id="tower-name" value="${tower.name}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Address</label>
+                        <input type="text" id="tower-address" value="${tower.address}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Total Floors</label>
+                        <input type="number" id="tower-floors" value="${tower.total_floors}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Description</label>
+                        <textarea id="tower-description" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500" rows="3">${tower.description || ''}</textarea>
+                    </div>
+                    <div class="flex space-x-4">
+                        <button onclick="updateTower(${id})" class="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700">Update Tower</button>
+                        <button onclick="showTowers()" class="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        alert('Error loading tower: ' + error.message);
+    }
+}
+
+async function updateTower(id) {
+    const data = {
+        name: document.getElementById('tower-name').value,
+        address: document.getElementById('tower-address').value,
+        total_floors: parseInt(document.getElementById('tower-floors').value),
+        description: document.getElementById('tower-description').value
+    };
 
     try {
         const response = await fetch(`${API_URL}/api/towers/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
         });
         if (response.ok) {
-            alert('Tower deleted successfully!');
+            alert('Tower updated successfully!');
             showTowers();
         } else {
-            alert('Error deleting tower');
+            alert('Error updating tower');
         }
     } catch (error) {
         alert('Error: ' + error.message);
     }
 }
+
 
 // ============ UNITS MANAGEMENT ============
 async function showUnits() {
@@ -375,23 +446,135 @@ async function addUnit() {
 }
 
 async function deleteUnit(id) {
-    if (!confirm('Are you sure you want to delete this unit?')) return;
+    showConfirmModal('Are you sure you want to delete this unit?', async (confirmed) => {
+        if (!confirmed) return;
+
+        try {
+            const response = await fetch(`${API_URL}/api/units/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                alert('Unit deleted successfully!');
+                showUnits();
+            } else {
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                alert(`Error deleting unit (${response.status}): ${errorData.error || response.statusText}`);
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    });
+}
+
+async function editUnit(id) {
+    try {
+        // Fetch unit data and towers
+        const [unitResponse, towersResponse] = await Promise.all([
+            fetch(`${API_URL}/api/units/${id}`),
+            fetch(`${API_URL}/api/towers`)
+        ]);
+        const unit = await unitResponse.json();
+        const towers = await towersResponse.json();
+
+        const content = document.getElementById('content-area');
+        content.innerHTML = `
+            <div class="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
+                <h3 class="text-2xl font-bold mb-6">Edit Unit</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2">Tower</label>
+                        <select id="unit-tower" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500">
+                            ${towers.map(t => `<option value="${t.id}" ${t.id === unit.tower_id ? 'selected' : ''}>${t.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Unit Number</label>
+                            <input type="text" id="unit-number" value="${unit.unit_number}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Floor</label>
+                            <input type="number" id="unit-floor" value="${unit.floor}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Bedrooms</label>
+                            <input type="number" id="unit-bedrooms" value="${unit.bedrooms}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Bathrooms</label>
+                            <input type="number" id="unit-bathrooms" value="${unit.bathrooms}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Size (sq ft)</label>
+                            <input type="number" id="unit-size" value="${unit.size_sqft}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Rent Amount</label>
+                            <input type="number" id="unit-rent" value="${unit.rent_amount}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Status</label>
+                        <select id="unit-status" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500">
+                            <option value="available" ${unit.status === 'available' ? 'selected' : ''}>Available</option>
+                            <option value="occupied" ${unit.status === 'occupied' ? 'selected' : ''}>Occupied</option>
+                            <option value="maintenance" ${unit.status === 'maintenance' ? 'selected' : ''}>Maintenance</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Description</label>
+                        <textarea id="unit-description" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500" rows="3">${unit.description || ''}</textarea>
+                    </div>
+                    <div class="flex space-x-4">
+                        <button onclick="updateUnit(${id})" class="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700">Update Unit</button>
+                        <button onclick="showUnits()" class="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        alert('Error loading unit: ' + error.message);
+    }
+}
+
+async function updateUnit(id) {
+    const data = {
+        tower_id: parseInt(document.getElementById('unit-tower').value),
+        unit_number: document.getElementById('unit-number').value,
+        floor: parseInt(document.getElementById('unit-floor').value),
+        bedrooms: parseInt(document.getElementById('unit-bedrooms').value),
+        bathrooms: parseInt(document.getElementById('unit-bathrooms').value),
+        size_sqft: parseInt(document.getElementById('unit-size').value),
+        rent_amount: parseFloat(document.getElementById('unit-rent').value),
+        status: document.getElementById('unit-status').value,
+        description: document.getElementById('unit-description').value
+    };
 
     try {
         const response = await fetch(`${API_URL}/api/units/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
         });
         if (response.ok) {
-            alert('Unit deleted successfully!');
+            alert('Unit updated successfully!');
             showUnits();
         } else {
-            alert('Error deleting unit');
+            alert('Error updating unit');
         }
     } catch (error) {
         alert('Error: ' + error.message);
     }
 }
+
 
 // ============ AMENITIES MANAGEMENT ============
 async function showAmenities() {
@@ -488,22 +671,24 @@ async function addAmenity() {
 }
 
 async function deleteAmenity(id) {
-    if (!confirm('Are you sure you want to delete this amenity?')) return;
+    showConfirmModal('Are you sure you want to delete this amenity?', async (confirmed) => {
+        if (!confirmed) return;
 
-    try {
-        const response = await fetch(`${API_URL}/api/amenities/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (response.ok) {
-            alert('Amenity deleted successfully!');
-            showAmenities();
-        } else {
-            alert('Error deleting amenity');
+        try {
+            const response = await fetch(`${API_URL}/api/amenities/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                alert('Amenity deleted successfully!');
+                showAmenities();
+            } else {
+                alert('Error deleting amenity');
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
         }
-    } catch (error) {
-        alert('Error: ' + error.message);
-    }
+    });
 }
 
 // ============ BOOKINGS MANAGEMENT ============
@@ -561,52 +746,145 @@ async function showBookings() {
     }
 }
 
-async function approveBooking(id) {
-    const comments = prompt('Add approval comments (optional):');
+// Helper function to show custom modal
+function showModal(title, placeholder, callback) {
+    const modalHtml = `
+        <div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
+            <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4" style="background: white; border-radius: 8px; padding: 24px; max-width: 500px; width: 90%;">
+                <h3 class="text-xl font-bold mb-4" style="font-size: 20px; font-weight: bold; margin-bottom: 16px;">${title}</h3>
+                <textarea id="modal-input" placeholder="${placeholder}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 mb-4" rows="3" style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 16px; font-family: inherit;"></textarea>
+                <div class="flex space-x-3" style="display: flex; gap: 12px;">
+                    <button id="modal-submit" class="flex-1 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700" style="flex: 1; background: #dc2626; color: white; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Submit</button>
+                    <button id="modal-cancel" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400" style="flex: 1; background: #d1d5db; color: #374151; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
 
-    try {
-        const response = await fetch(`${API_URL}/api/bookings/${id}/approve`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ admin_comments: comments || 'Approved' })
-        });
-        if (response.ok) {
-            alert('Booking approved successfully!');
-            showBookings();
-        } else {
-            const error = await response.json();
-            alert('Error: ' + error.error);
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const modal = document.getElementById('custom-modal');
+    const input = document.getElementById('modal-input');
+    const submitBtn = document.getElementById('modal-submit');
+    const cancelBtn = document.getElementById('modal-cancel');
+
+    input.focus();
+
+    submitBtn.onclick = () => {
+        const value = input.value.trim();
+        modal.remove();
+        callback(value);
+    };
+
+    cancelBtn.onclick = () => {
+        modal.remove();
+        callback(null);
+    };
+
+    // Allow Enter to submit
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            submitBtn.click();
         }
-    } catch (error) {
-        alert('Error: ' + error.message);
-    }
+    });
+}
+
+// Helper function to show custom confirmation modal
+function showConfirmModal(message, callback) {
+    const modalHtml = `
+        <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-center;">
+            <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4" style="background: white; border-radius: 8px; padding: 24px; max-width: 500px; width: 90%;">
+                <h3 class="text-xl font-bold mb-4" style="font-size: 20px; font-weight: bold; margin-bottom: 16px;">Confirm Action</h3>
+                <p class="text-gray-700 mb-6" style="color: #374151; margin-bottom: 24px;">${message}</p>
+                <div class="flex space-x-3" style="display: flex; gap: 12px;">
+                    <button id="confirm-yes" class="flex-1 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700" style="flex: 1; background: #dc2626; color: white; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Yes, Delete</button>
+                    <button id="confirm-no" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400" style="flex: 1; background: #d1d5db; color: #374151; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const modal = document.getElementById('confirm-modal');
+    const yesBtn = document.getElementById('confirm-yes');
+    const noBtn = document.getElementById('confirm-no');
+
+    yesBtn.focus();
+
+    yesBtn.onclick = () => {
+        modal.remove();
+        callback(true);
+    };
+
+    noBtn.onclick = () => {
+        modal.remove();
+        callback(false);
+    };
+
+    // Allow Enter to confirm, Escape to cancel
+    document.addEventListener('keydown', function handleKey(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            yesBtn.click();
+            document.removeEventListener('keydown', handleKey);
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            noBtn.click();
+            document.removeEventListener('keydown', handleKey);
+        }
+    });
+}
+
+
+async function approveBooking(id) {
+    showModal('Approve Booking', 'Add approval comments (optional)...', async (comments) => {
+        if (comments === null) return; // User cancelled
+
+        try {
+            const response = await fetch(`${API_URL}/api/bookings/${id}/approve`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ admin_comments: comments || 'Approved' })
+            });
+            if (response.ok) {
+                alert('Booking approved successfully!');
+                showBookings();
+            } else {
+                const error = await response.json();
+                alert('Error: ' + error.error);
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    });
 }
 
 async function rejectBooking(id) {
-    const comments = prompt('Add rejection reason:');
-    if (!comments) return;
+    showModal('Reject Booking', 'Add rejection reason (required)...', async (comments) => {
+        if (!comments) return; // User cancelled or left empty
 
-    try {
-        const response = await fetch(`${API_URL}/api/bookings/${id}/reject`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ admin_comments: comments })
-        });
-        if (response.ok) {
-            alert('Booking rejected');
-            showBookings();
-        } else {
-            alert('Error rejecting booking');
+        try {
+            const response = await fetch(`${API_URL}/api/bookings/${id}/reject`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ comments: comments })
+            });
+            if (response.ok) {
+                alert('Booking rejected');
+                showBookings();
+            } else {
+                alert('Error rejecting booking');
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
         }
-    } catch (error) {
-        alert('Error: ' + error.message);
-    }
+    });
 }
 
 // ============ LEASES MANAGEMENT ============

@@ -139,4 +139,8 @@ def delete_unit(unit_id):
         
     except Exception as e:
         db.session.rollback()
+        # Check if it's a foreign key constraint error
+        error_msg = str(e)
+        if 'FOREIGN KEY constraint failed' in error_msg or 'foreign key constraint' in error_msg.lower():
+            return jsonify({'error': 'Cannot delete unit as it has associated bookings or leases. Please remove them first.'}), 400
         return jsonify({'error': str(e)}), 500

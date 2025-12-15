@@ -123,4 +123,8 @@ def delete_tower(tower_id):
         
     except Exception as e:
         db.session.rollback()
+        # Check if it's a foreign key constraint error
+        error_msg = str(e)
+        if 'FOREIGN KEY constraint failed' in error_msg or 'foreign key constraint' in error_msg.lower():
+            return jsonify({'error': 'Cannot delete tower as it has associated units. Please delete all units first.'}), 400
         return jsonify({'error': str(e)}), 500

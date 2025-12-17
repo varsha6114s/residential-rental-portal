@@ -1,137 +1,298 @@
-# Residential Rental Portal
+# Residential Rental Portal - Angular 20
 
-A full-stack web application for managing residential rental properties with separate portals for users and administrators.
+> **Full-Stack Web Application** for managing residential rental properties with Angular 20, Flask, PostgreSQL, and Docker.
 
-## Tech Stack
+[![Angular](https://img.shields.io/badge/Angular-20-red)](https://angular.io/)
+[![Flask](https://img.shields.io/badge/Flask-3.0-green)](https://flask.palletsprojects.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-blue)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
 
-- **Frontend**: Vanilla JavaScript + Tailwind CSS
-- **Backend**: Flask (Python)
-- **Database**: SQLite
-- **Authentication**: JWT (JSON Web Tokens)
+---
 
-## Features
+## 🎯 Project Overview
 
-### User Portal
-- Browse available towers and units
-- View unit details with pricing in Indian Rupees (₹)
-- Submit booking requests
-- Track booking status
-- View amenities
+A comprehensive residential rental management system with separate portals for residents and administrators. Built with modern technologies and containerized for easy deployment.
 
-### Admin Portal
-- Dashboard with statistics
-- Manage towers and units
-- Approve/reject booking requests
-- View and manage leases
-- Manage amenities
+### **Key Features**
+- 🏠 **User Portal**: Browse towers, view amenities, book units, track bookings
+- 👨‍💼 **Admin Portal**: Manage towers, units, amenities, approve/reject bookings
+- 🔐 **JWT Authentication**: Secure user and admin sessions
+- 🐳 **Docker Ready**: One-command deployment with docker-compose
+- 📊 **PostgreSQL**: Production-ready database with SQLite fallback
 
-## Quick Start
+---
 
-### Prerequisites
-- Python 3.x
-- Web browser
+## 🚀 Quick Start
 
-### Setup
-
-1. **Clone the repository**
+### **Option 1: Docker (Recommended)**
 ```bash
-cd /Users/shivasagar/KOTS/residential-rental-portal
+# Start all services
+docker-compose up --build
+
+# Access applications:
+# User Portal: http://localhost:4200
+# Admin Portal: http://localhost:4201
+# Backend API: http://localhost:5000
 ```
 
-2. **Install backend dependencies**
+### **Option 2: Local Development**
 ```bash
+# Backend
 cd backend
-python3 -m venv venv
-./venv/bin/pip install Flask Flask-SQLAlchemy Flask-JWT-Extended Flask-CORS Werkzeug python-dotenv
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python app.py
+
+# User Portal
+cd frontend-user-angular
+npm install
+npm start  # http://localhost:4200
+
+# Admin Portal
+cd frontend-admin-angular
+npm install
+npm start  # http://localhost:4201
 ```
 
-3. **Seed the database**
-```bash
-./venv/bin/python seed_data.py
-```
+---
 
-4. **Start the backend server**
-```bash
-./venv/bin/python app.py
-```
+## 📋 Tech Stack
 
-The backend will run on `http://localhost:5000`
+### **Frontend**
+- **Angular 20** - Modern component-based framework
+- **TypeScript** - Type-safe development
+- **RxJS** - Reactive programming
+- **Custom CSS** - Responsive design
 
-5. **Open the frontend**
-```bash
-open index.html
-```
+### **Backend**
+- **Python Flask** - RESTful API server
+- **SQLAlchemy** - ORM for database operations
+- **Flask-JWT-Extended** - JWT authentication
+- **Flask-CORS** - Cross-origin resource sharing
 
-## Login Credentials
+### **Database**
+- **PostgreSQL** - Production database
+- **SQLite** - Development fallback
 
-### Admin Portal
-- Email: `admin@rental.com`
-- Password: `admin123`
+### **DevOps**
+- **Docker** - Containerization
+- **Docker Compose** - Multi-container orchestration
+- **Nginx** - Frontend web server
 
-### User Portal
-- User 1: `rajesh.kumar@example.com` / `password123`
-- User 2: `priya.sharma@example.com` / `password123`
+---
 
-## Project Structure
+## 🏗️ Project Structure
 
 ```
 residential-rental-portal/
-├── index.html              # Landing page with portal selection
-├── frontend-user/          # User portal
-│   └── index.html
-├── frontend-admin/         # Admin portal
-│   ├── index.html
-│   └── admin.js
-├── backend/                # Flask backend
-│   ├── app.py             # Main application
-│   ├── config.py          # Configuration
-│   ├── models.py          # Database models
-│   ├── seed_data.py       # Sample data script
-│   └── routes/            # API endpoints
-└── instance/              # SQLite database
+├── backend/                    # Flask API
+│   ├── models/                # Database models
+│   ├── routes/                # API endpoints
+│   ├── Dockerfile             # Backend container
+│   └── app.py                 # Main application
+├── frontend-user-angular/      # User Portal
+│   ├── src/app/
+│   │   ├── components/        # 5 Angular components
+│   │   ├── services/          # API & Auth services
+│   │   └── guards/            # Route protection
+│   ├── Dockerfile             # User portal container
+│   └── nginx.conf             # Nginx configuration
+├── frontend-admin-angular/     # Admin Portal
+│   ├── src/app/
+│   │   ├── components/        # 6 Angular components
+│   │   ├── services/          # Admin API & Auth
+│   │   └── guards/            # Admin route protection
+│   ├── Dockerfile             # Admin portal container
+│   └── nginx.conf             # Nginx configuration
+├── docker-compose.yml          # Multi-container setup
+├── DOCKER_GUIDE.md            # Docker deployment guide
+└── POSTGRESQL_SETUP.md        # PostgreSQL setup guide
 ```
 
-## API Endpoints
+---
 
-### Authentication
-- `POST /api/auth/register` - Register new user
+## 👤 Default Credentials
+
+### **User Portal**
+- Email: `rajesh.kumar@example.com`
+- Password: `password123`
+
+### **Admin Portal**
+- Email: `admin@rental.com`
+- Password: `admin123`
+
+---
+
+## 📱 Features
+
+### **User Portal**
+- ✅ User registration and login
+- ✅ Browse available towers
+- ✅ View unit details (bedrooms, bathrooms, rent)
+- ✅ View amenities (gym, pool, parking)
+- ✅ Book available units
+- ✅ Track booking status (pending/approved/rejected)
+
+### **Admin Portal**
+- ✅ Admin authentication
+- ✅ Dashboard with statistics
+- ✅ Manage towers (Create, Read, Update, Delete)
+- ✅ Manage units (Create, Read, Update, Delete)
+- ✅ Manage amenities (Create, Read, Update, Delete)
+- ✅ Approve or reject booking requests
+- ✅ Add admin comments to bookings
+
+---
+
+## 🗄️ Database Schema
+
+### **Tables**
+- `users` - User accounts and authentication
+- `towers` - Residential tower information
+- `units` - Individual rental units
+- `amenities` - Facility information
+- `bookings` - Rental booking requests
+- `leases` - Active rental agreements
+
+---
+
+## 🔧 API Endpoints
+
+### **Authentication**
+- `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User/Admin login
 
-### Towers
-- `GET /api/towers` - Get all towers
+### **Towers**
+- `GET /api/towers` - List all towers
 - `POST /api/towers` - Create tower (admin)
+- `PUT /api/towers/:id` - Update tower (admin)
 - `DELETE /api/towers/:id` - Delete tower (admin)
 
-### Units
-- `GET /api/units` - Get all units
+### **Units**
+- `GET /api/units` - List all units
+- `GET /api/towers/:id/units` - Units by tower
 - `POST /api/units` - Create unit (admin)
+- `PUT /api/units/:id` - Update unit (admin)
 - `DELETE /api/units/:id` - Delete unit (admin)
 
-### Bookings
-- `GET /api/bookings` - Get bookings
-- `POST /api/bookings` - Create booking request
+### **Amenities**
+- `GET /api/amenities` - List all amenities
+- `POST /api/amenities` - Create amenity (admin)
+- `PUT /api/amenities/:id` - Update amenity (admin)
+- `DELETE /api/amenities/:id` - Delete amenity (admin)
+
+### **Bookings**
+- `GET /api/bookings` - List bookings (admin)
+- `GET /api/bookings/my` - User's bookings
+- `POST /api/bookings` - Create booking
 - `PUT /api/bookings/:id/approve` - Approve booking (admin)
 - `PUT /api/bookings/:id/reject` - Reject booking (admin)
 
-### Amenities
-- `GET /api/amenities` - Get all amenities
-- `POST /api/amenities` - Create amenity (admin)
+---
 
-### Leases
-- `GET /api/leases` - Get all leases
+## 📊 Statistics
 
-## Sample Data
+- **11 Angular Components** (5 user + 6 admin)
+- **4 Services** (API, Auth for both portals)
+- **2 Route Guards** (User & Admin protection)
+- **3,000+ Lines of Code** (TypeScript, HTML, CSS)
+- **100% TypeScript** - Type-safe development
+- **Responsive Design** - Mobile-friendly UI
 
-The application comes pre-loaded with:
-- 3 Towers (Mumbai, Bangalore, Delhi)
-- 11 Units (1BHK to 4BHK)
-- 6 Amenities
-- 3 Users (1 admin, 2 regular users)
+---
 
-## Development
+## 🐳 Docker Services
 
-The application uses SQLite for easy setup and development. For production, you can switch to PostgreSQL by updating the `config.py` file.
+The `docker-compose.yml` includes:
+1. **PostgreSQL** - Database server (port 5432)
+2. **Backend** - Flask API (port 5000)
+3. **User Portal** - Angular app (port 4200)
+4. **Admin Portal** - Angular app (port 4201)
 
-## License
+---
 
-MIT License
+## 📚 Documentation
+
+- [Docker Deployment Guide](DOCKER_GUIDE.md)
+- [PostgreSQL Setup Guide](POSTGRESQL_SETUP.md)
+- [User Portal README](frontend-user-angular/README.md)
+- [Admin Portal README](frontend-admin-angular/README.md)
+
+---
+
+## 🛠️ Development
+
+### **Backend Development**
+```bash
+cd backend
+source venv/bin/activate
+python app.py
+```
+
+### **Frontend Development**
+```bash
+# User Portal
+cd frontend-user-angular
+npm start
+
+# Admin Portal
+cd frontend-admin-angular
+npm start
+```
+
+### **Database Migrations**
+The database is automatically created when the Flask app starts. To reset:
+```bash
+rm backend/instance/rental_portal.db
+python backend/app.py
+```
+
+---
+
+## 🚢 Production Deployment
+
+### **Build for Production**
+```bash
+# Build Angular apps
+cd frontend-user-angular && npm run build
+cd frontend-admin-angular && npm run build
+
+# Start with Docker
+docker-compose up -d
+```
+
+### **Environment Variables**
+Update `docker-compose.yml` for production:
+- `SECRET_KEY` - Flask secret key
+- `JWT_SECRET_KEY` - JWT signing key
+- `POSTGRES_PASSWORD` - Database password
+
+---
+
+## 📝 License
+
+This project is part of the Zeno Talent Internship Program.
+
+---
+
+## 👨‍💻 Author
+
+**Shiva Sagar**
+- GitHub: [@varsha6114s](https://github.com/varsha6114s)
+
+---
+
+## 🎉 Acknowledgments
+
+Built as part of the **Zeno Talent Internship Program** demonstrating:
+- Full-stack web development
+- Modern Angular framework
+- RESTful API design
+- Database management
+- Docker containerization
+- Production deployment
+
+---
+
+**⭐ Star this repository if you find it helpful!**

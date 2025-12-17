@@ -284,21 +284,6 @@ This project is part of the Zeno Talent Internship Program.
 
 ## 👨‍💻 Author
 
-**Shiva Sagar**
 - GitHub: [@varsha6114s](https://github.com/varsha6114s)
 
 ---
-
-## 🎉 Acknowledgments
-
-Built as part of the **Zeno Talent Internship Program** demonstrating:
-- Full-stack web development
-- Modern Angular framework
-- RESTful API design
-- Database management
-- Docker containerization
-- Production deployment
-
----
-
-**⭐ Star this repository if you find it helpful!**

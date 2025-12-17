@@ -1,66 +1,112 @@
-<div class="page-container">
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <h1 class="header-title">Admin Dashboard</h1>
-            <button (click)="logout()" class="btn-logout">Logout</button>
-        </div>
-    </header>
+<div class="dashboard-content max-w-7xl mx-auto">
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold text-slate-900">Statistics Overview</h2>
+        <p class="text-slate-500 text-sm mt-1">Real-time metrics for your property portfolio.</p>
+    </div>
 
-    <!-- Navigation -->
-    <nav class="nav-bar">
-        <div class="nav-content">
-            <button (click)="router.navigate(['/dashboard'])" class="nav-btn active">Dashboard</button>
-            <button (click)="router.navigate(['/towers'])" class="nav-btn">Towers</button>
-            <button (click)="router.navigate(['/units'])" class="nav-btn">Units</button>
-            <button (click)="router.navigate(['/bookings'])" class="nav-btn">Bookings</button>
-        </div>
-    </nav>
+    <div *ngIf="loading" class="flex justify-center items-center h-64">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"></div>
+    </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <h2 class="page-title">Statistics Overview</h2>
-
-        <div *ngIf="loading" class="loading-container">
-            <div class="spinner"></div>
-        </div>
-
-        <div *ngIf="!loading" class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">🏢</div>
-                <div class="stat-value">{{ stats.total_towers }}</div>
-                <div class="stat-label">Total Towers</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">🏠</div>
-                <div class="stat-value">{{ stats.total_units }}</div>
-                <div class="stat-label">Total Units</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">✅</div>
-                <div class="stat-value">{{ stats.occupied_units }}</div>
-                <div class="stat-label">Occupied Units</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">🟢</div>
-                <div class="stat-value">{{ stats.available_units }}</div>
-                <div class="stat-label">Available Units</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">⏳</div>
-                <div class="stat-value">{{ stats.pending_bookings }}</div>
-                <div class="stat-label">Pending Bookings</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">📋</div>
-                <div class="stat-value">{{ stats.active_leases }}</div>
-                <div class="stat-label">Active Leases</div>
+    <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Card 1 -->
+        <div class="card-panel p-6 border-l-4 border-blue-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500 uppercase tracking-wide">Total Towers</p>
+                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ stats.total_towers }}</p>
+                </div>
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                        </path>
+                    </svg>
+                </div>
             </div>
         </div>
-    </main>
+
+        <!-- Card 2 -->
+        <div class="card-panel p-6 border-l-4 border-indigo-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500 uppercase tracking-wide">Total Units</p>
+                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ stats.total_units }}</p>
+                </div>
+                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card-panel p-6 border-l-4 border-emerald-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500 uppercase tracking-wide">Occupied</p>
+                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ stats.occupied_units }}</p>
+                </div>
+                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="card-panel p-6 border-l-4 border-teal-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500 uppercase tracking-wide">Available</p>
+                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ stats.available_units }}</p>
+                </div>
+                <div class="p-3 bg-teal-50 text-teal-600 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="card-panel p-6 border-l-4 border-amber-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500 uppercase tracking-wide">Pending</p>
+                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ stats.pending_bookings }}</p>
+                </div>
+                <div class="p-3 bg-amber-50 text-amber-600 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="card-panel p-6 border-l-4 border-purple-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500 uppercase tracking-wide">Active Leases</p>
+                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ stats.active_leases }}</p>
+                </div>
+                <div class="p-3 bg-purple-50 text-purple-600 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,127 +1,158 @@
-<div class="page-container">
-    <header class="header">
-        <div class="header-content">
-            <h1 class="header-title">Admin Dashboard</h1>
-            <button (click)="logout()" class="btn-logout">Logout</button>
+<div class="units-content max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-900">Manage Units</h2>
+            <p class="text-sm text-slate-500 mt-1">Inventory and pricing management.</p>
         </div>
-    </header>
+        <button (click)="openAddModal()" class="btn-primary flex items-center shadow-sm">
+            <span class="mr-2 text-lg leading-none">+</span> Add Unit
+        </button>
+    </div>
 
-    <nav class="nav-bar">
-        <div class="nav-content">
-            <button (click)="router.navigate(['/dashboard'])" class="nav-btn">Dashboard</button>
-            <button (click)="router.navigate(['/towers'])" class="nav-btn">Towers</button>
-            <button (click)="router.navigate(['/units'])" class="nav-btn active">Units</button>
-            <button (click)="router.navigate(['/bookings'])" class="nav-btn">Bookings</button>
-        </div>
-    </nav>
+    <div *ngIf="loading" class="flex justify-center p-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    </div>
 
-    <main class="main-content">
-        <div class="title-bar">
-            <h2 class="page-title">Manage Units</h2>
-            <button (click)="openAddModal()" class="btn-add">+ Add Unit</button>
-        </div>
+    <div *ngIf="!loading" class="card-panel overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr>
+                    <th class="table-header">Unit #</th>
+                    <th class="table-header">Tower</th>
+                    <th class="table-header">Floor</th>
+                    <th class="table-header">Beds</th>
+                    <th class="table-header">Baths</th>
+                    <th class="table-header">Size</th>
+                    <th class="table-header">Rent</th>
+                    <th class="table-header">Status</th>
+                    <th class="table-header">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                <tr *ngFor="let unit of units" class="hover:bg-gray-50 transition-colors">
+                    <td class="table-cell font-bold text-slate-800">{{ unit.unit_number }}</td>
+                    <td class="table-cell text-slate-600">{{ unit.tower_name }}</td>
+                    <td class="table-cell text-slate-600">{{ unit.floor }}</td>
+                    <td class="table-cell text-slate-600">{{ unit.bedrooms }}</td>
+                    <td class="table-cell text-slate-600">{{ unit.bathrooms }}</td>
+                    <td class="table-cell text-slate-500 text-sm">{{ unit.size_sqft }} sqft</td>
+                    <td class="table-cell font-medium text-slate-900">₹{{ unit.rent_amount }}</td>
+                    <td class="table-cell">
+                        <span [class]="'px-2.5 py-0.5 rounded-full text-xs font-semibold ' + 
+                            (unit.status === 'available' ? 'bg-emerald-100 text-emerald-800' : 
+                             unit.status === 'occupied' ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800')">
+                            {{ unit.status | titlecase }}
+                        </span>
+                    </td>
+                    <td class="table-cell space-x-3">
+                        <button (click)="openEditModal(unit)"
+                            class="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm">Edit</button>
+                        <button (click)="deleteUnit(unit.id)"
+                            class="text-red-600 hover:text-red-800 font-medium transition-colors text-sm">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
-        <div *ngIf="loading" class="loading-container">
-            <div class="spinner"></div>
+        <!-- Empty State -->
+        <div *ngIf="units.length === 0" class="p-12 text-center text-slate-500">
+            No units found. Click "Add Unit" to create one.
         </div>
-
-        <div *ngIf="!loading" class="table-container">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Unit #</th>
-                        <th>Tower</th>
-                        <th>Floor</th>
-                        <th>Beds</th>
-                        <th>Baths</th>
-                        <th>Size (sqft)</th>
-                        <th>Rent</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let unit of units">
-                        <td>{{ unit.unit_number }}</td>
-                        <td>{{ unit.tower_name }}</td>
-                        <td>{{ unit.floor }}</td>
-                        <td>{{ unit.bedrooms }}</td>
-                        <td>{{ unit.bathrooms }}</td>
-                        <td>{{ unit.size_sqft }}</td>
-                        <td>₹{{ unit.rent_amount }}</td>
-                        <td><span [class]="'status-' + unit.status">{{ unit.status }}</span></td>
-                        <td>
-                            <button (click)="openEditModal(unit)" class="btn-edit">Edit</button>
-                            <button (click)="deleteUnit(unit.id)" class="btn-delete">Delete</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </main>
+    </div>
 
     <!-- Modal -->
-    <div *ngIf="showModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 class="modal-title">{{ editMode ? 'Edit Unit' : 'Add Unit' }}</h3>
-            <form (ngSubmit)="saveUnit()">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Tower</label>
-                        <select [(ngModel)]="currentUnit.tower_id" name="tower" required class="form-select">
+    <div *ngIf="showModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fadeIn">
+        <div class="bg-white w-full max-w-2xl p-8 rounded-xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                <h3 class="text-xl font-bold text-slate-900">{{ editMode ? 'Edit Unit' : 'Add New Unit' }}</h3>
+                <button (click)="closeModal()"
+                    class="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
+            </div>
+
+            <form (ngSubmit)="saveUnit()" class="space-y-5">
+                <!-- Row 1 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Tower</label>
+                        <select [(ngModel)]="currentUnit.tower_id" name="tower" required class="form-input">
                             <option *ngFor="let tower of towers" [value]="tower.id">{{ tower.name }}</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Unit Number</label>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Unit Number</label>
                         <input type="text" [(ngModel)]="currentUnit.unit_number" name="number" required
-                            class="form-input">
+                            class="form-input" placeholder="e.g. 101">
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Floor</label>
-                        <input type="number" [(ngModel)]="currentUnit.floor" name="floor" required class="form-input">
+
+                <!-- Row 2 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Floor</label>
+                        <input type="number" [(ngModel)]="currentUnit.floor" name="floor" required class="form-input"
+                            placeholder="1">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Bedrooms</label>
-                        <input type="number" [(ngModel)]="currentUnit.bedrooms" name="beds" required class="form-input">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Bedrooms</label>
+                        <input type="number" [(ngModel)]="currentUnit.bedrooms" name="beds" required class="form-input"
+                            placeholder="2">
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Bathrooms</label>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Bathrooms</label>
                         <input type="number" [(ngModel)]="currentUnit.bathrooms" name="baths" required
-                            class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Size (sqft)</label>
-                        <input type="number" [(ngModel)]="currentUnit.size_sqft" name="size" required
-                            class="form-input">
+                            class="form-input" placeholder="1">
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Rent Amount</label>
+
+                <!-- Row 3 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Size (sqft)</label>
+                        <input type="number" [(ngModel)]="currentUnit.size_sqft" name="size" required class="form-input"
+                            placeholder="1200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Rent Amount (₹)</label>
                         <input type="number" [(ngModel)]="currentUnit.rent_amount" name="rent" required
-                            class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Status</label>
-                        <select [(ngModel)]="currentUnit.status" name="status" required class="form-select">
-                            <option value="available">Available</option>
-                            <option value="occupied">Occupied</option>
-                            <option value="maintenance">Maintenance</option>
-                        </select>
+                            class="form-input" placeholder="25000">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Description</label>
-                    <textarea [(ngModel)]="currentUnit.description" name="description" class="form-textarea"></textarea>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center">
+                            <input type="radio" [(ngModel)]="currentUnit.status" name="status" value="available"
+                                class="mr-2 text-brand-primary focus:ring-brand-primary">
+                            <span class="text-sm text-slate-700">Available</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" [(ngModel)]="currentUnit.status" name="status" value="occupied"
+                                class="mr-2 text-brand-primary focus:ring-brand-primary">
+                            <span class="text-sm text-slate-700">Occupied</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" [(ngModel)]="currentUnit.status" name="status" value="maintenance"
+                                class="mr-2 text-brand-primary focus:ring-brand-primary">
+                            <span class="text-sm text-slate-700">Maintenance</span>
+                        </label>
+                    </div>
                 </div>
-                <div class="button-group">
-                    <button type="submit" class="btn-submit">Save</button>
-                    <button type="button" (click)="closeModal()" class="btn-cancel">Cancel</button>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                    <textarea [(ngModel)]="currentUnit.description" name="description" rows="3" class="form-input"
+                        placeholder="Details about specific features..."></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100 mt-6">
+                    <button type="button" (click)="closeModal()" class="btn-secondary">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        {{ editMode ? 'Update Unit' : 'Create Unit' }}
+                    </button>
                 </div>
             </form>
         </div>

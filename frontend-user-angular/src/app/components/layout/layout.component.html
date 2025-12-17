@@ -1,0 +1,69 @@
+<div class="min-h-screen bg-gray-50 flex flex-col">
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 cursor-pointer flex items-center" routerLink="/towers">
+                    <span class="text-2xl font-bold text-teal-700 tracking-tight">
+                        LuxeLiving
+                    </span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-6">
+                        <a routerLink="/towers" routerLinkActive="text-teal-700 border-b-2 border-teal-700"
+                            class="px-1 py-5 text-sm font-medium text-slate-500 hover:text-teal-700 transition-colors border-b-2 border-transparent">
+                            Browse Towers
+                        </a>
+                        <a routerLink="/amenities" routerLinkActive="text-teal-700 border-b-2 border-teal-700"
+                            class="px-1 py-5 text-sm font-medium text-slate-500 hover:text-teal-700 transition-colors border-b-2 border-transparent">
+                            Amenities
+                        </a>
+                        <a routerLink="/my-bookings" routerLinkActive="text-teal-700 border-b-2 border-teal-700"
+                            class="px-1 py-5 text-sm font-medium text-slate-500 hover:text-teal-700 transition-colors border-b-2 border-transparent">
+                            My Bookings
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Profile / Logout -->
+                <div class="flex items-center space-x-4">
+                    <button (click)="logout()"
+                        class="text-slate-500 hover:text-red-600 px-3 py-2 text-sm font-medium transition-colors">
+                        Logout
+                    </button>
+                    <div
+                        class="h-9 w-9 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-sm border border-teal-200">
+                        U
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fadeIn">
+            <router-outlet></router-outlet>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <span class="text-lg font-bold text-slate-800">LuxeLiving</span>
+                    <p class="text-slate-500 text-sm mt-1">&copy; 2024 Residential Portal. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6 text-slate-400">
+                    <a href="#" class="hover:text-teal-600 transition-colors">Privacy</a>
+                    <a href="#" class="hover:text-teal-600 transition-colors">Terms</a>
+                    <a href="#" class="hover:text-teal-600 transition-colors">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>

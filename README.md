@@ -18,7 +18,7 @@ A comprehensive residential rental management system with separate portals for r
 - 👨‍💼 **Admin Portal**: Manage towers, units, amenities, approve/reject bookings
 - 🔐 **JWT Authentication**: Secure user and admin sessions
 - 🐳 **Docker Ready**: One-command deployment with docker-compose
-- 📊 **PostgreSQL**: Production-ready database with SQLite fallback
+- 📊 **PostgreSQL**: Production-ready database (PostgreSQL only)
 
 ---
 
@@ -37,8 +37,11 @@ docker-compose up --build
 
 ### **Option 2: Local Development**
 ```bash
-# Backend
+# Setup PostgreSQL Database
 cd backend
+python setup_postgres.py  # Creates database and user
+
+# Backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
@@ -72,8 +75,7 @@ npm start  # http://localhost:4201
 - **Flask-CORS** - Cross-origin resource sharing
 
 ### **Database**
-- **PostgreSQL** - Production database
-- **SQLite** - Development fallback
+- **PostgreSQL** - Primary database (development & production)
 
 ### **DevOps**
 - **Docker** - Containerization
@@ -241,11 +243,15 @@ cd frontend-admin-angular
 npm start
 ```
 
-### **Database Migrations**
-The database is automatically created when the Flask app starts. To reset:
+### **Database Setup**
+The PostgreSQL database is automatically created when the Flask app starts. For local development:
 ```bash
-rm backend/instance/rental_portal.db
-python backend/app.py
+# Setup PostgreSQL database and user
+cd backend
+python setup_postgres.py
+
+# Start the application
+python app.py
 ```
 
 ---

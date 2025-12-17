@@ -78,7 +78,8 @@ export class UnitsComponent implements OnInit {
         }, 2000);
       },
       error: (error) => {
-        this.bookingMessage = error.error?.error || 'Failed to submit booking';
+        console.error('Booking error:', error);
+        this.bookingMessage = error.error?.error || error.error?.msg || error.message || 'Failed to submit booking';
       }
     });
   }

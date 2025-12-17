@@ -1,30 +1,55 @@
-<div class="page-container">
-    <header class="header">
-        <div class="header-content">
-            <button (click)="goBack()" class="btn-back">← Back to Towers</button>
-        </div>
-    </header>
-
-    <main class="main-content">
-        <h2 class="page-title">Available Amenities</h2>
-
-        <div *ngIf="loading" class="loading-container">
-            <div class="spinner"></div>
+<div class="container mx-auto pb-12">
+    <div class="amenities-content pb-12">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-slate-900 border-l-4 border-teal-600 pl-3">Community Amenities</h2>
+            <p class="text-slate-500 mt-2 ml-4">Explore our premium facilities designed for your comfort.</p>
         </div>
 
-        <div *ngIf="!loading" class="grid">
-            <div *ngFor="let amenity of amenities" class="amenity-card">
-                <div class="amenity-icon">🏋️</div>
-                <h3 class="amenity-name">{{ amenity.name }}</h3>
-                <p class="amenity-description">{{ amenity.description }}</p>
-                <p class="amenity-hours" *ngIf="amenity.availability_hours">
-                    ⏰ {{ amenity.availability_hours }}
-                </p>
+        <!-- Loading -->
+        <div *ngIf="loading" class="flex justify-center p-12">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+        </div>
+
+        <!-- Amenities Grid -->
+        <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div *ngFor="let amenity of amenities"
+                class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row items-start md:items-center transition-all hover:shadow-md">
+                <!-- Icon Placeholder -->
+                <div class="bg-teal-50 p-4 rounded-lg mr-6 mb-4 md:mb-0 text-teal-600">
+                    <!-- Simple Icon Representation -->
+                    <div
+                        class="w-8 h-8 flex items-center justify-center font-bold text-xl text-teal-600 bg-teal-50 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="flex-grow">
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">{{ amenity.name }}</h3>
+                    <p class="text-slate-500 text-sm mb-2">{{ amenity.description }}</p>
+                    <div class="flex items-center text-xs text-slate-400">
+                        <span class="font-medium mr-1 uppercase tracking-wider">Hours:</span>
+                        {{ amenity.availability_hours || '24/7' }}
+                    </div>
+                </div>
+
+                <div class="mt-4 md:mt-0 md:ml-4">
+                    <span [class]="'px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide ' + 
+                        (amenity.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500')">
+                        {{ amenity.is_active ? 'Active' : 'Closed' }}
+                    </span>
+                </div>
             </div>
         </div>
 
-        <div *ngIf="!loading && amenities.length === 0" class="empty-state">
-            <p>No amenities available at the moment.</p>
+        <!-- Empty State -->
+        <div *ngIf="!loading && amenities.length === 0"
+            class="bg-white p-12 rounded-xl border border-dashed border-gray-200 text-center">
+            <p class="text-lg text-slate-500">No amenities listed yet.</p>
         </div>
-    </main>
+    </div>
 </div>

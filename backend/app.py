@@ -33,8 +33,13 @@ def create_app():
     
     # Create tables
     with app.app_context():
-        db.create_all()
-        print("Database tables created successfully!")
+        try:
+            db.create_all()
+            print("✅ PostgreSQL database tables created successfully!")
+        except Exception as e:
+            print(f"❌ Database connection error: {e}")
+            print("Make sure PostgreSQL is running and accessible")
+            print("Run 'python setup_postgres.py' to set up the database")
     
     @app.route('/')
     def index():

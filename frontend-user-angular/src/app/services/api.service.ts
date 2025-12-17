@@ -55,12 +55,12 @@ export class ApiService {
     // Booking endpoints
     createBooking(unitId: number, moveInDate: string, leaseDuration: number): Observable<any> {
         return this.http.post(`${this.apiUrl}/bookings`,
-            { unit_id: unitId, move_in_date: moveInDate, lease_duration: leaseDuration },
+            { unit_id: unitId, requested_move_in_date: moveInDate, lease_duration: leaseDuration },
             { headers: this.getHeaders() }
         );
     }
 
     getMyBookings(): Observable<Booking[]> {
-        return this.http.get<Booking[]>(`${this.apiUrl}/bookings/my-bookings`, { headers: this.getHeaders() });
+        return this.http.get<Booking[]>(`${this.apiUrl}/bookings`, { headers: this.getHeaders() });
     }
 }

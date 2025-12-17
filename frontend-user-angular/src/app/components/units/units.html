@@ -1,84 +1,107 @@
-<div class="page-container">
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <button (click)="goBack()" class="btn-back">
-                ← Back to Towers
-            </button>
-        </div>
-    </header>
+<div class="units-content pb-12">
+    <!-- Header with Back Button -->
+    <div class="flex items-center justify-between mb-8">
+        <button (click)="goBack()"
+            class="flex items-center text-slate-500 hover:text-teal-700 transition-colors group text-sm font-medium">
+            <span class="mr-1 group-hover:-translate-x-1 transition-transform">←</span> Back to Towers
+        </button>
+        <h2 class="text-2xl font-bold text-slate-900">Available Units</h2>
+        <div class="w-10"></div> <!-- Spacer for alignment -->
+    </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <h2 class="page-title">Available Units</h2>
+    <!-- Loading -->
+    <div *ngIf="loading" class="flex justify-center p-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+    </div>
 
-        <!-- Loading -->
-        <div *ngIf="loading" class="loading-container">
-            <div class="spinner"></div>
-        </div>
+    <!-- Units Grid -->
+    <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let unit of units"
+            class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300 relative group">
 
-        <!-- Units Grid -->
-        <div *ngIf="!loading" class="grid">
-            <div *ngFor="let unit of units" class="unit-card">
-                <div class="unit-header">
-                    <h3 class="unit-number">Unit {{ unit.unit_number }}</h3>
-                    <span
-                        [class]="unit.status === 'available' ? 'status-badge status-available' : 'status-badge status-unavailable'">
-                        {{ unit.status }}
-                    </span>
+            <!-- Status Badge -->
+            <div class="absolute top-4 right-4 z-10">
+                <span [class]="'px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide shadow-sm ' + 
+                    (unit.status === 'available' ? 'bg-white text-emerald-700' : 
+                     'bg-white text-red-600')">
+                    {{ unit.status }}
+                </span>
+            </div>
+
+            <!-- Image Placeholder -->
+            <div class="h-40 bg-gray-100 flex items-center justify-center text-gray-300 text-4xl">
+                <span>Unit</span>
+            </div>
+
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-xl font-bold text-slate-900">Unit {{ unit.unit_number }}</h3>
+                    <div class="text-lg font-bold text-teal-700">₹{{ unit.rent_amount }}<span
+                            class="text-xs text-slate-400 font-normal">/mo</span></div>
                 </div>
 
-                <div class="unit-details">
-                    <p class="unit-info">🏢 Floor: {{ unit.floor }}</p>
-                    <p class="unit-info">🛏️ Bedrooms: {{ unit.bedrooms }}</p>
-                    <p class="unit-info">🚿 Bathrooms: {{ unit.bathrooms }}</p>
-                    <p class="unit-info">📐 Size: {{ unit.size_sqft }} sq ft</p>
-                    <p class="unit-rent">₹{{ unit.rent_amount }}/month</p>
+                <div class="grid grid-cols-2 gap-y-2 gap-x-4 mb-6 text-sm">
+                    <div class="flex items-center text-slate-600">
+                        <span class="text-slate-400 mr-2 w-12">Floor:</span> {{ unit.floor }}
+                    </div>
+                    <div class="flex items-center text-slate-600">
+                        <span class="text-slate-400 mr-2 w-12">Area:</span> {{ unit.size_sqft }} sqft
+                    </div>
+                    <div class="flex items-center text-slate-600">
+                        <span class="text-slate-400 mr-2 w-12">Beds:</span> {{ unit.bedrooms }}
+                    </div>
+                    <div class="flex items-center text-slate-600">
+                        <span class="text-slate-400 mr-2 w-12">Baths:</span> {{ unit.bathrooms }}
+                    </div>
                 </div>
 
-                <p class="unit-description">{{ unit.description }}</p>
+                <p class="text-slate-500 text-sm mb-6 min-h-[3rem] line-clamp-2">{{ unit.description }}</p>
 
-                <button *ngIf="unit.status === 'available'" (click)="openBookingModal(unit)" class="btn-book">
-                    Book Now
+                <button *ngIf="unit.status === 'available'" (click)="openBookingModal(unit)"
+                    class="w-full btn-primary py-2 text-sm shadow-sm hover:shadow-md transition-all">
+                    Book This Unit
                 </button>
-                <button *ngIf="unit.status !== 'available'" disabled class="btn-book">
+                <button *ngIf="unit.status !== 'available'" disabled
+                    class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200 text-sm font-medium">
                     Not Available
                 </button>
             </div>
         </div>
-    </main>
+    </div>
 
     <!-- Booking Modal -->
-    <div *ngIf="showBookingModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 class="modal-title">Book Unit {{ selectedUnit?.unit_number }}</h3>
+    <div *ngIf="showBookingModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fadeIn">
+        <div class="bg-white w-full max-w-md p-8 rounded-xl shadow-2xl relative">
+            <h3 class="text-xl font-bold mb-2 text-slate-900">Book Unit {{ selectedUnit?.unit_number }}</h3>
+            <p class="text-slate-500 mb-6 text-sm">Fill in the details below to request a booking.</p>
 
             <div *ngIf="bookingMessage"
-                [class]="bookingMessage.includes('success') ? 'message-box message-success' : 'message-box message-error'">
+                [class]="'p-4 rounded-lg mb-6 text-sm flex items-center ' + (bookingMessage.includes('success') ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100')">
                 {{ bookingMessage }}
             </div>
 
-            <form (ngSubmit)="submitBooking()">
-                <div class="form-group">
-                    <label class="form-label">Move-in Date</label>
+            <form (ngSubmit)="submitBooking()" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Move-in Date</label>
                     <input type="date" [(ngModel)]="moveInDate" name="moveInDate" required class="form-input">
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Lease Duration (months)</label>
-                    <select [(ngModel)]="leaseDuration" name="leaseDuration" class="form-select">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Lease Duration</label>
+                    <select [(ngModel)]="leaseDuration" name="leaseDuration" class="form-input">
                         <option [value]="6">6 months</option>
                         <option [value]="12">12 months</option>
                         <option [value]="24">24 months</option>
                     </select>
                 </div>
 
-                <div class="button-group">
-                    <button type="submit" class="btn-submit">
-                        Submit Booking
-                    </button>
-                    <button type="button" (click)="closeBookingModal()" class="btn-cancel">
+                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100 mt-2">
+                    <button type="button" (click)="closeBookingModal()" class="btn-secondary">
                         Cancel
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        Submit Booking
                     </button>
                 </div>
             </form>

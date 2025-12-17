@@ -20,7 +20,7 @@ export class TowersComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
-    private router: Router
+    public router: Router
   ) { }
 
   ngOnInit() {

@@ -1,50 +1,78 @@
-<div class="page-container">
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <h1 class="header-title">Residential Rental Portal</h1>
-            <div class="header-buttons">
-                <button (click)="router.navigate(['/my-bookings'])" class="btn-header">
-                    My Bookings
-                </button>
-                <button (click)="logout()" class="btn-header">
-                    Logout
-                </button>
-            </div>
+<div class="towers-content pb-12">
+    <!-- Hero Section -->
+    <div class="relative rounded-xl overflow-hidden mb-10 h-64 bg-slate-900 group">
+        <div class="absolute inset-0 bg-teal-900/20 mix-blend-multiply"></div>
+        <div
+            class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-center opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700">
         </div>
-    </header>
+
+        <div class="relative z-10 h-full flex flex-col justify-center items-center text-center px-4">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">Find Your Sanctuary</h1>
+            <p class="text-lg text-slate-200 font-light max-w-2xl">Premium residential towers designed for modern
+                living.</p>
+        </div>
+    </div>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <h2 class="page-title">Available Towers</h2>
+    <div class="relative">
+        <div class="flex items-center mb-8">
+            <div class="h-8 w-1 bg-teal-600 rounded-full mr-3"></div>
+            <h2 class="text-2xl font-bold text-slate-900">Available Towers</h2>
+        </div>
 
         <!-- Loading State -->
-        <div *ngIf="loading" class="loading-container">
-            <div class="spinner"></div>
-            <p class="loading-text">Loading towers...</p>
+        <div *ngIf="loading" class="flex justify-center p-12">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
         </div>
 
         <!-- Error State -->
-        <div *ngIf="errorMessage" class="error-box">
+        <div *ngIf="errorMessage"
+            class="bg-red-50 text-red-600 border border-red-100 p-4 rounded-lg mb-6 text-center text-sm">
             {{ errorMessage }}
         </div>
 
         <!-- Towers Grid -->
-        <div *ngIf="!loading && !errorMessage" class="grid">
-            <div *ngFor="let tower of towers" class="tower-card" (click)="viewUnits(tower.id)">
-                <div class="tower-content">
-                    <h3 class="tower-name">{{ tower.name }}</h3>
-                    <p class="tower-info">📍 {{ tower.address }}</p>
-                    <p class="tower-info">🏢 {{ tower.total_floors }} Floors</p>
-                    <p class="tower-description">{{ tower.description }}</p>
-                    <button class="btn-view">View Units</button>
+        <div *ngIf="!loading && !errorMessage" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div *ngFor="let tower of towers"
+                class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
+                (click)="viewUnits(tower.id)">
+
+                <!-- Card Image Placeholder -->
+                <div class="h-48 bg-slate-100 relative overflow-hidden flex items-center justify-center">
+                    <span class="text-slate-300 text-5xl font-thin tracking-widest uppercase">Tower</span>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
+                        <h3 class="text-xl font-bold text-white leading-tight">{{ tower.name }}</h3>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-start text-sm text-slate-600">
+                            <span class="font-medium mr-2 text-slate-400 w-16">Address:</span>
+                            <span>{{ tower.address }}</span>
+                        </div>
+                        <div class="flex items-center text-sm text-slate-600">
+                            <span class="font-medium mr-2 text-slate-400 w-16">Floors:</span>
+                            <span>{{ tower.total_floors }}</span>
+                        </div>
+                        <p
+                            class="text-slate-500 text-sm leading-relaxed line-clamp-2 mt-2 pt-2 border-t border-gray-50">
+                            {{ tower.description }}
+                        </p>
+                    </div>
+
+                    <button
+                        class="w-full btn-outline text-sm py-2 group-hover:bg-teal-600 group-hover:text-white group-hover:border-teal-600 transition-all">
+                        View Available Units
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- Empty State -->
-        <div *ngIf="!loading && !errorMessage && towers.length === 0" class="empty-state">
-            <p class="empty-text">No towers available at the moment.</p>
+        <div *ngIf="!loading && !errorMessage && towers.length === 0"
+            class="bg-white p-12 rounded-xl border border-dashed border-gray-200 text-center">
+            <p class="text-lg text-slate-500">No towers available at the moment.</p>
         </div>
-    </main>
+    </div>
 </div>

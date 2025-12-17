@@ -1,53 +1,78 @@
-<div class="page-container">
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <button (click)="goBack()" class="btn-back">
-                ← Back to Towers
-            </button>
+<div class="container mx-auto pb-12">
+    <!-- Bookings Content -->
+    <div class="bookings-content pb-12">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-slate-900 border-l-4 border-teal-600 pl-3">My Bookings</h2>
+            <p class="text-slate-500 mt-2 ml-4">Track the status of your rental applications.</p>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <h2 class="page-title">My Bookings</h2>
 
         <!-- Loading -->
-        <div *ngIf="loading" class="loading-container">
-            <div class="spinner"></div>
+        <div *ngIf="loading" class="flex justify-center p-12">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
         </div>
 
         <!-- Bookings List -->
-        <div *ngIf="!loading" class="bookings-list">
-            <div *ngFor="let booking of bookings" class="booking-card">
-                <div class="booking-header">
-                    <div>
-                        <h3 class="booking-title">{{ booking.tower_name }} - Unit {{ booking.unit_number }}</h3>
-                        <p class="booking-info">Move-in: {{ booking.move_in_date | date }}</p>
-                        <p class="booking-info">Duration: {{ booking.lease_duration }} months</p>
+        <div *ngIf="!loading" class="space-y-4">
+            <div *ngFor="let booking of bookings"
+                class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row justify-between items-start md:items-center hover:shadow-md transition-shadow">
+
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center mb-2">
+                        <span class="text-lg font-bold text-slate-900 mr-3">{{ booking.tower_name }}</span>
+                        <span class="text-slate-400 text-sm bg-gray-100 px-2 py-0.5 rounded">Unit {{ booking.unit_number
+                            }}</span>
                     </div>
-                    <span [class]="'status-badge status-' + booking.status">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1 text-sm text-slate-600">
+                        <div class="flex items-center">
+                            <span class="text-slate-400 mr-2 w-20">Move-in:</span> {{ booking.move_in_date |
+                            date:'mediumDate' }}
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-slate-400 mr-2 w-20">Duration:</span> {{ booking.lease_duration }} Months
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-slate-400 mr-2 w-20">Submitted:</span> {{ booking.created_at |
+                            date:'mediumDate' }}
+                        </div>
+                    </div>
+
+                    <!-- Admin Comments Section -->
+                    <div *ngIf="booking.admin_comments"
+                        class="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-100 text-sm">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wide block mb-1">Admin
+                            Response</span>
+                        <p class="text-slate-700">{{ booking.admin_comments }}</p>
+                    </div>
+                </div>
+
+                <!-- Status Badge -->
+                <div class="flex flex-col items-end">
+                    <span [class]="'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-2 ' +
+                        (booking.status === 'approved' ? 'bg-emerald-50 text-emerald-700' :
+                         booking.status === 'rejected' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700')">
                         {{ booking.status }}
                     </span>
+                    <p class="flex items-center">
+                        <span class="mr-2 opacity-70">🕒</span> Submitted: <span class="text-slate-200 ml-1">{{
+                            booking.created_at | date:'medium' }}</span>
+                    </p>
                 </div>
 
-                <div *ngIf="booking.admin_comments" class="comments-box">
-                    <p class="comments-label">Admin Comments:</p>
-                    <p class="comments-text">{{ booking.admin_comments }}</p>
+                <div *ngIf="booking.admin_comments" class="bg-white/5 p-4 rounded-lg border-l-2 border-brand-accent">
+                    <p class="text-xs text-brand-accent font-bold uppercase mb-1">Admin Message</p>
+                    <p class="text-slate-300 text-sm italic">"{{ booking.admin_comments }}"</p>
                 </div>
-
-                <p class="booking-date">
-                    Submitted: {{ booking.created_at | date:'medium' }}
-                </p>
-            </div>
-
-            <!-- Empty State -->
-            <div *ngIf="bookings.length === 0" class="empty-state">
-                <p class="empty-text">You haven't made any bookings yet.</p>
-                <button (click)="goBack()" class="btn-browse">
-                    Browse Towers
-                </button>
             </div>
         </div>
-    </main>
+
+        <!-- Empty State -->
+        <div *ngIf="bookings.length === 0" class="glass-panel p-12 text-center">
+            <p class="text-xl text-slate-400 mb-6">You haven't made any bookings yet.</p>
+            <button (click)="goBack()" class="glass-button-primary">
+                Browse Towers
+            </button>
+        </div>
+    </div>
 </div>

@@ -30,8 +30,15 @@ def register():
         db.session.add(user)
         db.session.commit()
         
+        # Create JWT token for new user
+        access_token = create_access_token(
+            identity=str(user.id),
+            additional_claims={'role': user.role, 'email': user.email}
+        )
+
         return jsonify({
             'message': 'User registered successfully',
+            'access_token': access_token,
             'user': user.to_dict()
         }), 201
         
@@ -65,7 +72,7 @@ def login():
         
         return jsonify({
             'message': 'Login successful',
-            'token': access_token,
+            'access_token': access_token,
             'user': user.to_dict()
         }), 200
         

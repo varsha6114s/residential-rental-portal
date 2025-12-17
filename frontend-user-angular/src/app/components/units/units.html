@@ -1,0 +1,87 @@
+<div class="page-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <button (click)="goBack()" class="btn-back">
+                ← Back to Towers
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h2 class="page-title">Available Units</h2>
+
+        <!-- Loading -->
+        <div *ngIf="loading" class="loading-container">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- Units Grid -->
+        <div *ngIf="!loading" class="grid">
+            <div *ngFor="let unit of units" class="unit-card">
+                <div class="unit-header">
+                    <h3 class="unit-number">Unit {{ unit.unit_number }}</h3>
+                    <span
+                        [class]="unit.status === 'available' ? 'status-badge status-available' : 'status-badge status-unavailable'">
+                        {{ unit.status }}
+                    </span>
+                </div>
+
+                <div class="unit-details">
+                    <p class="unit-info">🏢 Floor: {{ unit.floor }}</p>
+                    <p class="unit-info">🛏️ Bedrooms: {{ unit.bedrooms }}</p>
+                    <p class="unit-info">🚿 Bathrooms: {{ unit.bathrooms }}</p>
+                    <p class="unit-info">📐 Size: {{ unit.size_sqft }} sq ft</p>
+                    <p class="unit-rent">₹{{ unit.rent_amount }}/month</p>
+                </div>
+
+                <p class="unit-description">{{ unit.description }}</p>
+
+                <button *ngIf="unit.status === 'available'" (click)="openBookingModal(unit)" class="btn-book">
+                    Book Now
+                </button>
+                <button *ngIf="unit.status !== 'available'" disabled class="btn-book">
+                    Not Available
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Booking Modal -->
+    <div *ngIf="showBookingModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Book Unit {{ selectedUnit?.unit_number }}</h3>
+
+            <div *ngIf="bookingMessage"
+                [class]="bookingMessage.includes('success') ? 'message-box message-success' : 'message-box message-error'">
+                {{ bookingMessage }}
+            </div>
+
+            <form (ngSubmit)="submitBooking()">
+                <div class="form-group">
+                    <label class="form-label">Move-in Date</label>
+                    <input type="date" [(ngModel)]="moveInDate" name="moveInDate" required class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Lease Duration (months)</label>
+                    <select [(ngModel)]="leaseDuration" name="leaseDuration" class="form-select">
+                        <option [value]="6">6 months</option>
+                        <option [value]="12">12 months</option>
+                        <option [value]="24">24 months</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-submit">
+                        Submit Booking
+                    </button>
+                    <button type="button" (click)="closeBookingModal()" class="btn-cancel">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

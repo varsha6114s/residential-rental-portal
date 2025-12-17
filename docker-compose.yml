@@ -2,21 +2,19 @@ version: '3.8'
 
 services:
   # PostgreSQL Database
-  database:
-    image: postgres:15
-    container_name: rental_db
+  postgres:
+    image: postgres:14-alpine
+    container_name: rental-postgres
     environment:
-      POSTGRES_DB: rental_portal
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: residential_rental
+      POSTGRES_USER: rental_user
+      POSTGRES_PASSWORD: rental_password
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - rental_network
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d rental_portal"]
+      test: ["CMD-SHELL", "pg_isready -U rental_user -d residential_rental"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,25 +22,38 @@ services:
   # Flask Backend
   backend:
     build: ./backend
-    container_name: rental_backend
+    container_name: rental-backend
+    environment:
+      DATABASE_URL: postgresql://rental_user:rental_password@postgres:5432/residential_rental
+      FLASK_ENV: production
+      SECRET_KEY: production-secret-key-change-this
+      JWT_SECRET_KEY: jwt-production-secret-key-change-this
     ports:
       - "5000:5000"
-    environment:
-      DATABASE_URL: postgresql://admin:password@database:5432/rental_portal
-      JWT_SECRET_KEY: your-secret-key-change-in-production
-      SECRET_KEY: your-app-secret-key-change-in-production
-      FLASK_ENV: development
     depends_on:
-      database:
+      postgres:
         condition: service_healthy
-    networks:
-      - rental_network
     volumes:
       - ./backend:/app
+    command: python app.py
+
+  # User Portal (Angular)
+  user-portal:
+    build: ./frontend-user-angular
+    container_name: rental-user-portal
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
+  # Admin Portal (Angular)
+  admin-portal:
+    build: ./frontend-admin-angular
+    container_name: rental-admin-portal
+    ports:
+      - "4201:80"
+    depends_on:
+      - backend
 
 volumes:
-  db_data:
-
-networks:
-  rental_network:
-    driver: bridge
+  postgres_data:

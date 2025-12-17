@@ -1,0 +1,129 @@
+<div class="page-container">
+    <header class="header">
+        <div class="header-content">
+            <h1 class="header-title">Admin Dashboard</h1>
+            <button (click)="logout()" class="btn-logout">Logout</button>
+        </div>
+    </header>
+
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <button (click)="router.navigate(['/dashboard'])" class="nav-btn">Dashboard</button>
+            <button (click)="router.navigate(['/towers'])" class="nav-btn">Towers</button>
+            <button (click)="router.navigate(['/units'])" class="nav-btn active">Units</button>
+            <button (click)="router.navigate(['/bookings'])" class="nav-btn">Bookings</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="title-bar">
+            <h2 class="page-title">Manage Units</h2>
+            <button (click)="openAddModal()" class="btn-add">+ Add Unit</button>
+        </div>
+
+        <div *ngIf="loading" class="loading-container">
+            <div class="spinner"></div>
+        </div>
+
+        <div *ngIf="!loading" class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Unit #</th>
+                        <th>Tower</th>
+                        <th>Floor</th>
+                        <th>Beds</th>
+                        <th>Baths</th>
+                        <th>Size (sqft)</th>
+                        <th>Rent</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let unit of units">
+                        <td>{{ unit.unit_number }}</td>
+                        <td>{{ unit.tower_name }}</td>
+                        <td>{{ unit.floor }}</td>
+                        <td>{{ unit.bedrooms }}</td>
+                        <td>{{ unit.bathrooms }}</td>
+                        <td>{{ unit.size_sqft }}</td>
+                        <td>₹{{ unit.rent_amount }}</td>
+                        <td><span [class]="'status-' + unit.status">{{ unit.status }}</span></td>
+                        <td>
+                            <button (click)="openEditModal(unit)" class="btn-edit">Edit</button>
+                            <button (click)="deleteUnit(unit.id)" class="btn-delete">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div *ngIf="showModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">{{ editMode ? 'Edit Unit' : 'Add Unit' }}</h3>
+            <form (ngSubmit)="saveUnit()">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Tower</label>
+                        <select [(ngModel)]="currentUnit.tower_id" name="tower" required class="form-select">
+                            <option *ngFor="let tower of towers" [value]="tower.id">{{ tower.name }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Unit Number</label>
+                        <input type="text" [(ngModel)]="currentUnit.unit_number" name="number" required
+                            class="form-input">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Floor</label>
+                        <input type="number" [(ngModel)]="currentUnit.floor" name="floor" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bedrooms</label>
+                        <input type="number" [(ngModel)]="currentUnit.bedrooms" name="beds" required class="form-input">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Bathrooms</label>
+                        <input type="number" [(ngModel)]="currentUnit.bathrooms" name="baths" required
+                            class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Size (sqft)</label>
+                        <input type="number" [(ngModel)]="currentUnit.size_sqft" name="size" required
+                            class="form-input">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Rent Amount</label>
+                        <input type="number" [(ngModel)]="currentUnit.rent_amount" name="rent" required
+                            class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select [(ngModel)]="currentUnit.status" name="status" required class="form-select">
+                            <option value="available">Available</option>
+                            <option value="occupied">Occupied</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea [(ngModel)]="currentUnit.description" name="description" class="form-textarea"></textarea>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn-submit">Save</button>
+                    <button type="button" (click)="closeModal()" class="btn-cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

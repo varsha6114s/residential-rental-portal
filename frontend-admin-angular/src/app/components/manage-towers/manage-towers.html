@@ -1,0 +1,85 @@
+<div class="page-container">
+    <header class="header">
+        <div class="header-content">
+            <h1 class="header-title">Admin Dashboard</h1>
+            <button (click)="logout()" class="btn-logout">Logout</button>
+        </div>
+    </header>
+
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <button (click)="router.navigate(['/dashboard'])" class="nav-btn">Dashboard</button>
+            <button (click)="router.navigate(['/towers'])" class="nav-btn active">Towers</button>
+            <button (click)="router.navigate(['/units'])" class="nav-btn">Units</button>
+            <button (click)="router.navigate(['/bookings'])" class="nav-btn">Bookings</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="title-bar">
+            <h2 class="page-title">Manage Towers</h2>
+            <button (click)="openAddModal()" class="btn-add">+ Add Tower</button>
+        </div>
+
+        <div *ngIf="loading" class="loading-container">
+            <div class="spinner"></div>
+        </div>
+
+        <div *ngIf="!loading" class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Floors</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let tower of towers">
+                        <td>{{ tower.name }}</td>
+                        <td>{{ tower.address }}</td>
+                        <td>{{ tower.total_floors }}</td>
+                        <td>{{ tower.description }}</td>
+                        <td>
+                            <button (click)="openEditModal(tower)" class="btn-edit">Edit</button>
+                            <button (click)="deleteTower(tower.id)" class="btn-delete">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div *ngIf="showModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">{{ editMode ? 'Edit Tower' : 'Add Tower' }}</h3>
+            <form (ngSubmit)="saveTower()">
+                <div class="form-group">
+                    <label class="form-label">Tower Name</label>
+                    <input type="text" [(ngModel)]="currentTower.name" name="name" required class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <input type="text" [(ngModel)]="currentTower.address" name="address" required class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Total Floors</label>
+                    <input type="number" [(ngModel)]="currentTower.total_floors" name="floors" required
+                        class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea [(ngModel)]="currentTower.description" name="description"
+                        class="form-textarea"></textarea>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn-submit">Save</button>
+                    <button type="button" (click)="closeModal()" class="btn-cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

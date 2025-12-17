@@ -1,0 +1,66 @@
+<div class="page-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="header-title">Admin Dashboard</h1>
+            <button (click)="logout()" class="btn-logout">Logout</button>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <button (click)="router.navigate(['/dashboard'])" class="nav-btn active">Dashboard</button>
+            <button (click)="router.navigate(['/towers'])" class="nav-btn">Towers</button>
+            <button (click)="router.navigate(['/units'])" class="nav-btn">Units</button>
+            <button (click)="router.navigate(['/bookings'])" class="nav-btn">Bookings</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h2 class="page-title">Statistics Overview</h2>
+
+        <div *ngIf="loading" class="loading-container">
+            <div class="spinner"></div>
+        </div>
+
+        <div *ngIf="!loading" class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🏢</div>
+                <div class="stat-value">{{ stats.total_towers }}</div>
+                <div class="stat-label">Total Towers</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🏠</div>
+                <div class="stat-value">{{ stats.total_units }}</div>
+                <div class="stat-label">Total Units</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value">{{ stats.occupied_units }}</div>
+                <div class="stat-label">Occupied Units</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🟢</div>
+                <div class="stat-value">{{ stats.available_units }}</div>
+                <div class="stat-label">Available Units</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-value">{{ stats.pending_bookings }}</div>
+                <div class="stat-label">Pending Bookings</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-value">{{ stats.active_leases }}</div>
+                <div class="stat-label">Active Leases</div>
+            </div>
+        </div>
+    </main>
+</div>

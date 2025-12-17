@@ -1,0 +1,87 @@
+<div class="page-container">
+    <header class="header">
+        <div class="header-content">
+            <h1 class="header-title">Admin Dashboard</h1>
+            <button (click)="logout()" class="btn-logout">Logout</button>
+        </div>
+    </header>
+
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <button (click)="router.navigate(['/dashboard'])" class="nav-btn">Dashboard</button>
+            <button (click)="router.navigate(['/towers'])" class="nav-btn">Towers</button>
+            <button (click)="router.navigate(['/units'])" class="nav-btn">Units</button>
+            <button (click)="router.navigate(['/bookings'])" class="nav-btn active">Bookings</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <h2 class="page-title">Manage Bookings</h2>
+
+        <div *ngIf="loading" class="loading-container">
+            <div class="spinner"></div>
+        </div>
+
+        <div *ngIf="!loading" class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Tower</th>
+                        <th>Unit</th>
+                        <th>Move-in Date</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th>Comments</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let booking of bookings">
+                        <td>{{ booking.user_name }}</td>
+                        <td>{{ booking.tower_name }}</td>
+                        <td>{{ booking.unit_number }}</td>
+                        <td>{{ booking.move_in_date | date }}</td>
+                        <td>{{ booking.lease_duration }} months</td>
+                        <td><span [class]="getStatusClass(booking.status)">{{ booking.status }}</span></td>
+                        <td>{{ booking.admin_comments || '-' }}</td>
+                        <td>
+                            <button *ngIf="booking.status === 'pending'" (click)="openApproveModal(booking)"
+                                class="btn-approve">Approve</button>
+                            <button *ngIf="booking.status === 'pending'" (click)="openRejectModal(booking)"
+                                class="btn-reject">Reject</button>
+                            <span *ngIf="booking.status !== 'pending'" class="text-muted">{{ booking.status }}</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div *ngIf="showModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">{{ actionType === 'approve' ? 'Approve' : 'Reject' }} Booking</h3>
+            <div class="booking-details">
+                <p><strong>User:</strong> {{ currentBooking?.user_name }}</p>
+                <p><strong>Unit:</strong> {{ currentBooking?.tower_name }} - {{ currentBooking?.unit_number }}</p>
+                <p><strong>Move-in:</strong> {{ currentBooking?.move_in_date | date }}</p>
+            </div>
+            <form (ngSubmit)="submitAction()">
+                <div class="form-group">
+                    <label class="form-label">Comments {{ actionType === 'reject' ? '(Required)' : '(Optional)'
+                        }}</label>
+                    <textarea [(ngModel)]="comments" name="comments" [required]="actionType === 'reject'"
+                        class="form-textarea"
+                        [placeholder]="actionType === 'approve' ? 'Add approval comments...' : 'Add rejection reason...'"></textarea>
+                </div>
+                <div class="button-group">
+                    <button type="submit" [class]="actionType === 'approve' ? 'btn-submit' : 'btn-submit-reject'">
+                        {{ actionType === 'approve' ? 'Approve' : 'Reject' }}
+                    </button>
+                    <button type="button" (click)="closeModal()" class="btn-cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

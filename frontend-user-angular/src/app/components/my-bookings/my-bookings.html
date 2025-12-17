@@ -1,0 +1,53 @@
+<div class="page-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <button (click)="goBack()" class="btn-back">
+                ← Back to Towers
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h2 class="page-title">My Bookings</h2>
+
+        <!-- Loading -->
+        <div *ngIf="loading" class="loading-container">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- Bookings List -->
+        <div *ngIf="!loading" class="bookings-list">
+            <div *ngFor="let booking of bookings" class="booking-card">
+                <div class="booking-header">
+                    <div>
+                        <h3 class="booking-title">{{ booking.tower_name }} - Unit {{ booking.unit_number }}</h3>
+                        <p class="booking-info">Move-in: {{ booking.move_in_date | date }}</p>
+                        <p class="booking-info">Duration: {{ booking.lease_duration }} months</p>
+                    </div>
+                    <span [class]="'status-badge status-' + booking.status">
+                        {{ booking.status }}
+                    </span>
+                </div>
+
+                <div *ngIf="booking.admin_comments" class="comments-box">
+                    <p class="comments-label">Admin Comments:</p>
+                    <p class="comments-text">{{ booking.admin_comments }}</p>
+                </div>
+
+                <p class="booking-date">
+                    Submitted: {{ booking.created_at | date:'medium' }}
+                </p>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="bookings.length === 0" class="empty-state">
+                <p class="empty-text">You haven't made any bookings yet.</p>
+                <button (click)="goBack()" class="btn-browse">
+                    Browse Towers
+                </button>
+            </div>
+        </div>
+    </main>
+</div>

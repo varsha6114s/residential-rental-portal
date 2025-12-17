@@ -11,9 +11,15 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'jwt-secret-key-change-in-production'
     
-    # Database - Using SQLite for easier setup
+    # Database - PostgreSQL with SQLite fallback
     basedir = os.path.abspath(os.path.dirname(__file__))
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    
+    # If DATABASE_URL starts with postgres://, replace with postgresql://
+    if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
+        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+    
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL or \
         'sqlite:///' + os.path.join(basedir, 'instance', 'rental_portal.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     

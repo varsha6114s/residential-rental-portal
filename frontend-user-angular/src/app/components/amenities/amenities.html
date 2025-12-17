@@ -1,0 +1,30 @@
+<div class="page-container">
+    <header class="header">
+        <div class="header-content">
+            <button (click)="goBack()" class="btn-back">← Back to Towers</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <h2 class="page-title">Available Amenities</h2>
+
+        <div *ngIf="loading" class="loading-container">
+            <div class="spinner"></div>
+        </div>
+
+        <div *ngIf="!loading" class="grid">
+            <div *ngFor="let amenity of amenities" class="amenity-card">
+                <div class="amenity-icon">🏋️</div>
+                <h3 class="amenity-name">{{ amenity.name }}</h3>
+                <p class="amenity-description">{{ amenity.description }}</p>
+                <p class="amenity-hours" *ngIf="amenity.availability_hours">
+                    ⏰ {{ amenity.availability_hours }}
+                </p>
+            </div>
+        </div>
+
+        <div *ngIf="!loading && amenities.length === 0" class="empty-state">
+            <p>No amenities available at the moment.</p>
+        </div>
+    </main>
+</div>

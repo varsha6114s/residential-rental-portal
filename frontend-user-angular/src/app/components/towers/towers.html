@@ -1,0 +1,50 @@
+<div class="page-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="header-title">Residential Rental Portal</h1>
+            <div class="header-buttons">
+                <button (click)="router.navigate(['/my-bookings'])" class="btn-header">
+                    My Bookings
+                </button>
+                <button (click)="logout()" class="btn-header">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h2 class="page-title">Available Towers</h2>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text">Loading towers...</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage" class="error-box">
+            {{ errorMessage }}
+        </div>
+
+        <!-- Towers Grid -->
+        <div *ngIf="!loading && !errorMessage" class="grid">
+            <div *ngFor="let tower of towers" class="tower-card" (click)="viewUnits(tower.id)">
+                <div class="tower-content">
+                    <h3 class="tower-name">{{ tower.name }}</h3>
+                    <p class="tower-info">📍 {{ tower.address }}</p>
+                    <p class="tower-info">🏢 {{ tower.total_floors }} Floors</p>
+                    <p class="tower-description">{{ tower.description }}</p>
+                    <button class="btn-view">View Units</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!loading && !errorMessage && towers.length === 0" class="empty-state">
+            <p class="empty-text">No towers available at the moment.</p>
+        </div>
+    </main>
+</div>
